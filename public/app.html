@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — Money Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="masthead">
+      <div class="masthead-title">
+        <p class="eyebrow" id="monthEyebrow">This month</p>
+        <h1 id="monthTitle">—</h1>
+      </div>
+      <div class="header-right">
+        <div class="user-bar">
+          <span class="user-name" id="userName"></span>
+          <button type="button" class="logout-btn" id="logoutBtn">Log out</button>
+        </div>
+        <div class="balance-block">
+          <p class="label">Current balance</p>
+          <p class="amount" id="balanceAmount" title="Click to correct your balance">₱0.00</p>
+          <span class="balance-edit-hint">Tap the amount to correct it</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <main class="ledger-card">
+        <div class="month-tabs" id="monthTabs"></div>
+        <div class="ledger-body">
+          <div class="history-note" id="historyNote">
+            📖 You're viewing a past month. Entries here no longer change the running total — jump back to the current month to add new ones.
+          </div>
+
+          <form class="entry-form" id="txForm">
+            <div class="field type-field">
+              <label>Type</label>
+              <div class="type-toggle" id="typeToggle">
+                <button type="button" data-type="expense" class="active">Expense</button>
+                <button type="button" data-type="income">Income</button>
+              </div>
+            </div>
+            <div class="field amount-field">
+              <label for="amountInput">Amount</label>
+              <span class="currency">₱</span>
+              <input type="number" id="amountInput" min="0" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="field category-field">
+              <label>Category</label>
+              <div class="category-picker" id="categoryPicker"></div>
+            </div>
+            <div class="field submit-field">
+              <label>&nbsp;</label>
+              <button type="submit" class="add-btn" id="addBtn">Add entry</button>
+            </div>
+            <div class="field note-row" style="grid-column: 1 / -1;">
+              <label for="noteInput">Note (optional)</label>
+              <input type="text" id="noteInput" placeholder="e.g. Jeepney fare, grocery run…" maxlength="80">
+            </div>
+          </form>
+
+          <div class="receipt" id="txList"></div>
+
+          <div class="month-summary">
+            <div class="sum-item">
+              <span class="sum-label">Starting balance</span>
+              <span class="sum-value" id="sumStart">₱0.00</span>
+            </div>
+            <div class="sum-item">
+              <span class="sum-label">Income</span>
+              <span class="sum-value income" id="sumIncome">₱0.00</span>
+            </div>
+            <div class="sum-item">
+              <span class="sum-label">Expenses</span>
+              <span class="sum-value expense" id="sumExpense">₱0.00</span>
+            </div>
+            <div class="sum-item">
+              <span class="sum-label">Ending balance</span>
+              <span class="sum-value" id="sumEnd">₱0.00</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="charts-panel">
+        <div class="chart-block">
+          <h3>Where it went</h3>
+          <p class="chart-sub" id="categorySub">Expenses by category</p>
+          <div class="chart-canvas-wrap" id="categoryChartWrap">
+            <canvas id="categoryChart"></canvas>
+          </div>
+          <ul class="legend-list" id="categoryLegend"></ul>
+        </div>
+        <div class="chart-block">
+          <h3>Balance over time</h3>
+          <p class="chart-sub">Ending balance, month by month</p>
+          <div class="chart-canvas-wrap trend" id="trendChartWrap">
+            <canvas id="trendChart"></canvas>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="saved-note">Saved to your account — safe to close and come back later</footer>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
