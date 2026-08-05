@@ -8,7 +8,7 @@
   let mode = "login";
 
   // Already logged in? Skip straight to the app.
-  fetch("../api/auth.php?action=me", { credentials: "include" })
+  fetch("/api/auth.php?action=me", { credentials: "include" })
     .then((r) => r.json())
     .then((d) => { if (d.loggedIn) window.location.href = "app.html"; })
     .catch(() => {});
@@ -34,7 +34,7 @@
     const password = passwordInput.value;
 
     try {
-      const res = await fetch("../api/auth.php", {
+      const res = await fetch("/api/auth.php", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
