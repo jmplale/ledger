@@ -34,17 +34,17 @@
   // ---------- API helpers ----------
   async function apiGetJson(url){
     const res = await fetch(url, { credentials: "include" });
-    if (res.status === 401) { window.location.href = "login.html"; throw new Error("not logged in"); }
+    if (res.status === 401) { window.location.href = "index.html"; throw new Error("not logged in"); }
     return res.json();
   }
   async function apiPost(action, body){
-    const res = await fetch("../api/data.php", {
+    const res = await fetch("/api/data.php", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action, ...body })
     });
-    if (res.status === 401) { window.location.href = "login.html"; throw new Error("not logged in"); }
+    if (res.status === 401) { window.location.href = "index.html"; throw new Error("not logged in"); }
     return res.json();
   }
 
@@ -57,7 +57,7 @@
   }
 
   async function loadData(){
-    const data = await apiGetJson("../api/data.php?action=get_data");
+    const data = await apiGetJson("/api/data.php?action=get_data");
     if (!data.ok) throw new Error(data.error || "Failed to load data");
     currentRealMonthKey = data.currentMonthKey;
     monthsCache = data.months;
@@ -68,8 +68,8 @@
   }
 
   async function checkAuthAndInit(){
-    const me = await apiGetJson("../api/auth.php?action=me");
-    if (!me.loggedIn) { window.location.href = "login.html"; return; }
+    const me = await apiGetJson("/api/auth.php?action=me");
+    if (!me.loggedIn) { window.location.href = "index.html"; return; }
     document.getElementById("userName").textContent = me.username;
 
     await loadData();
@@ -84,13 +84,13 @@
 
   function wireLogout(){
     document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await fetch("../api/auth.php", {
+      await fetch("/api/auth.php", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "logout" })
       });
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     });
   }
 
@@ -188,7 +188,6 @@
       if (!isCurrent) el.setAttribute("disabled","disabled"); else el.removeAttribute("disabled");
     });
 
-    // live balance always reflects the current real month, regardless of what's being viewed
     const liveBal = endingBalance(monthsCache[currentRealMonthKey]);
     const balEl = document.getElementById("balanceAmount");
     balEl.textContent = fmtMoney(liveBal);
@@ -208,7 +207,6 @@
       return;
     }
     const isCurrent = viewingMonthKey === currentRealMonthKey;
-    // group by date, most recent day first
     const byDate = {};
     for (const t of rec.transactions) (byDate[t.date] = byDate[t.date] || []).push(t);
     const dates = Object.keys(byDate).sort().reverse();
@@ -266,7 +264,6 @@
       wrap.appendChild(empty);
       return;
     }
-    // remove any leftover empty-state node
     const stale = wrap.querySelector(".chart-empty");
     if (stale) stale.remove();
     if (!document.getElementById("categoryChart")){
@@ -355,7 +352,6 @@
             await loadData();
           }
         }
-        // restore the display element before re-rendering (renderAll expects a <p>, not an <input>)
         const restored = document.createElement("p");
         restored.className = "amount";
         restored.id = "balanceAmount";
