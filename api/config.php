@@ -1,15 +1,17 @@
 <?php
 // config.php — database connection settings.
-// Update these 4 values to match your setup (XAMPP defaults are already filled in).
 
-$DB_HOST = 'localhost';
-$DB_NAME = 'ledger_app';
-$DB_USER = 'root';
-$DB_PASS = '';           // XAMPP's default MySQL root password is empty. Real hosts will give you one.
+// Read from Render environment variables (falls back to XAMPP defaults if running locally)
+$DB_HOST = getenv('DB_HOST') ?: 'localhost';
+$DB_PORT = getenv('DB_PORT') ?: '3306';
+$DB_NAME = getenv('DB_NAME') ?: 'ledger_app';
+$DB_USER = getenv('DB_USER') ?: 'root';
+$DB_PASS = getenv('DB_PASS') ?: '';
 
 try {
+    $dsn = "mysql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME;charset=utf8mb4";
     $pdo = new PDO(
-        "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4",
+        $dsn,
         $DB_USER,
         $DB_PASS,
         [
@@ -20,7 +22,7 @@ try {
 } catch (PDOException $e) {
     http_response_code(500);
     header('Content-Type: application/json');
-    die(json_encode(['ok' => false, 'error' => 'Database connection failed. Check config.php.']));
+    die(json_encode(['ok' => false, 'error' => 'DB Connection Error: ' . $e->getMessage()]));
 }
 
 session_start([
